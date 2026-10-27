@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>邮件 ↔ Redmine转记工具</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header>
+    <div class="titlebar">
+      <h1 data-i18n="title">邮件 ↔ Redmine转记工具</h1>
+      <button id="openSettings" class="icon-button" data-i18n-title="settings" aria-label="设置" title="设置">⚙</button>
+    </div>
+    <p id="status" role="status" data-i18n="ready">点击提取当前邮件，或打开 Redmine 新建票页面。</p>
+  </header>
+  <main>
+    <nav class="tab-nav" role="tablist" aria-label="工具类别">
+      <button id="tabMail" class="tab-button active" role="tab" aria-selected="true" aria-controls="mailPanel" data-i18n="mailTab">邮件转记</button>
+      <button id="tabCallCenter" class="tab-button" role="tab" aria-selected="false" aria-controls="callCenterPanel" data-i18n="callCenterTab">コールセンター</button>
+    </nav>
+
+    <section id="mailPanel" class="tab-panel" role="tabpanel" aria-labelledby="tabMail">
+      <section class="actions">
+        <button id="extract" class="primary" data-i18n="extract">提取当前邮件</button>
+      </section>
+      <details open>
+        <summary data-i18n="mailSection">邮件内容（可检查、编辑）</summary>
+        <label><span data-i18n="subject">邮件标题</span><textarea id="subject" rows="2"></textarea></label>
+        <label><span data-i18n="received">收件时间</span><textarea id="received" rows="1" placeholder="YYYY/MM/DD (日) HH:MM"></textarea></label>
+        <label><span data-i18n="bodyFormat">正文格式</span>
+          <select id="template"><option value="auto" data-i18n="autoTemplate">自动识别</option><option value="ordinary" data-i18n="ordinaryTemplate">普通邮件（保留段落/列表/表格）</option></select>
+        </label>
+        <button id="reformat" class="format-button" data-i18n="reformat">按所选模板重新排版</button>
+        <label><span data-i18n="body">邮件正文</span><textarea id="body" rows="9"></textarea></label>
+        <label><span data-i18n="descriptionPreview">Redmine 説明预览</span><textarea id="descriptionPreview" rows="6" readonly></textarea></label>
+      </details>
+      <section class="actions sticky">
+        <button id="fillExternal" class="primary" data-i18n="fillExternal">转写外部票</button>
+        <button id="fillInternal" class="primary" data-i18n="fillInternal">转写内部票</button>
+      </section>
+      <details class="redmine-settings">
+        <summary data-i18n="mailRedmineSection">邮件票 Redmine 字段</summary>
+        <button id="mailReadOptions" data-i18n="readOptions">读取当前 Redmine 新建票页的可选值</button>
+        <p class="help" data-i18n="readOptionsHelp">请先打开本项目的 Redmine 新建票页面，再读取担当者和重要度候选项；候选仅作输入建议。</p>
+        <label><span data-i18n="assignee">担当者</span><input id="mailAssignee" list="mailAssigneeOptions"><datalist id="mailAssigneeOptions"></datalist></label>
+        <label><span data-i18n="dueDays">対応目途（几天后）</span><input id="mailDueDays" type="number" min="0" max="365"></label>
+        <label><span data-i18n="priority">重要度</span><input id="mailPriority" list="mailPriorityOptions"><datalist id="mailPriorityOptions"></datalist></label>
+        <label><span data-i18n="watchers">ウォッチャー（每行一人）</span><textarea id="mailWatchers" rows="4"></textarea></label>
+        <label><span data-i18n="externalId">外部票号</span><input id="externalId" placeholder="例如：12345"></label>
+        <label><span data-i18n="externalUrl">相关外部 Redmine 票链接</span><input id="externalUrl" placeholder="https://redmine.../issues/12345"></label>
+        <p class="help" data-i18n="urlHelp">修改票号会更新链接末尾的编号；链接域名和前缀可以直接编辑。</p>
+        <p class="help" data-i18n="mailRememberHelp">邮件票的字段设置会独立记忆。</p>
+      </details>
+    </section>
+
+    <section id="callCenterPanel" class="tab-panel" role="tabpanel" aria-labelledby="tabCallCenter" hidden>
+      <section class="actions"><button id="ccRead" class="primary" data-i18n="ccRead">读取当前外部票</button></section>
+      <details open>
+        <summary data-i18n="ccSection">コールセンターチケット（检查、编辑）</summary>
+        <label><span data-i18n="ccPriority">外部票优先度</span><input id="ccPriority" list="ccExternalPriorityOptions" placeholder="例如：通常"><datalist id="ccExternalPriorityOptions"></datalist></label>
+        <label><span data-i18n="ccSubject">外部票标题</span><textarea id="ccSubject" rows="2"></textarea></label>
+        <label><span data-i18n="ccBody">外部票说明</span><textarea id="ccBody" rows="9"></textarea></label>
+        <p class="help" data-i18n="ccHelp">请先在外部 Redmine 打开目标票并读取，再切换到内部 Redmine 新建票页面转记。</p>
+      </details>
+      <details class="redmine-settings">
+        <summary data-i18n="ccRedmineSection">コールセンター票 Redmine 字段</summary>
+        <button id="ccReadOptions" data-i18n="readOptions">读取当前 Redmine 新建票页的可选值</button>
+        <p class="help" data-i18n="ccReadOptionsHelp">请先打开内部项目的 Redmine 新建票页面，再读取担当者、重要度和优先度候选项；候选仅作输入建议。</p>
+        <label><span data-i18n="ccAssignee">担当者</span><input id="ccAssignee" list="ccAssigneeOptions"><datalist id="ccAssigneeOptions"></datalist></label>
+        <label><span data-i18n="ccDueDays">対応目途（几天后）</span><input id="ccDueDays" type="number" min="0" max="365"></label>
+        <label><span data-i18n="ccImportance">重要度</span><input id="ccImportance" list="ccImportanceOptions"><datalist id="ccImportanceOptions"></datalist></label>
+        <label><span data-i18n="ccWatchers">ウォッチャー（每行一人）</span><textarea id="ccWatchers" rows="4"></textarea></label>
+        <label><span data-i18n="ccExternalId">外部票号</span><input id="ccId" placeholder="例如：12345"></label>
+        <label><span data-i18n="ccExternalUrl">相关外部 Redmine 票链接</span><input id="ccUrl" placeholder="https://redmine.../issues/12345"></label>
+        <p class="help" data-i18n="ccUrlHelp">コールセンター票号和链接独立保存；修改票号会更新 URL 末尾编号。</p>
+        <p class="help" data-i18n="ccRememberHelp">コールセンター票的字段设置会独立记忆。</p>
+      </details>
+      <section class="actions sticky"><button id="ccFill" class="primary" data-i18n="ccFill">转写内部コールセンター票</button></section>
+    </section>
+    <div id="results" class="results" aria-live="polite"></div>
+    <p class="note" data-i18n="manualSubmit">只填写 Redmine 草稿，不会提交。请核对页面后手动提交。</p>
+  </main>
+  <dialog id="settingsDialog">
+    <div class="dialog-head"><strong data-i18n="settings">设置</strong><button id="closeSettings" class="icon-button" data-i18n-title="close" title="关闭">×</button></div>
+    <label><span data-i18n="language">语言</span><select id="language"><option value="zh">简体中文</option><option value="ja">日本語</option><option value="en">English</option></select></label>
+    <label><span data-i18n="templateConfig">邮件模板配置（JSON）</span><textarea id="templateConfig" rows="16" spellcheck="false"></textarea></label>
+    <p class="help" data-i18n="templateHelp">模板设置帮助</p>
+    <div class="actions"><button id="resetTemplates" data-i18n="resetTemplates">恢复内置模板</button><button id="exportTemplates" data-i18n="exportTemplates">导出配置</button><button id="saveSettings" class="primary" data-i18n="saveSettings">保存设置</button></div>
+    <p id="settingsStatus" class="settings-status"></p>
+  </dialog>
+  <script src="panel.js"></script>
+</body>
+</html>
+

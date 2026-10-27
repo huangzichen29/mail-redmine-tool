@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "default_locale": "zh_CN",
+  "name": "__MSG_appName__",
+  "version": "2.3.1",
+  "description": "__MSG_appDescription__",
+  "permissions": ["sidePanel", "activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": [
+    "https://outlook.office.com/*",
+    "https://outlook.office365.com/*",
+    "https://outlook.cloud.microsoft/*",
+    "https://outlook.live.com/*",
+    "https://redmine-skgd3.housei-inc.com/*",
+    "https://redmine-skgd3-local.housei-inc.com/*"
+  ],
+  "background": { "service_worker": "service_worker.js" },
+  "action": { "default_title": "__MSG_appName__" },
+  "side_panel": { "default_path": "panel.html" },
+  "content_scripts": [{
+    "matches": [
+      "https://outlook.office.com/*",
+      "https://outlook.office365.com/*",
+      "https://outlook.cloud.microsoft/*",
+      "https://outlook.live.com/*",
+      "https://redmine-skgd3.housei-inc.com/*",
+      "https://redmine-skgd3-local.housei-inc.com/*"
+    ],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }]
+}
+
+
+
+
+
+
